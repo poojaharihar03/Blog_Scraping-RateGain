@@ -1,3 +1,4 @@
+import csv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -26,7 +27,6 @@ def scrape_blog_data(driver, url):
         anchor_elements = driver.find_elements(By.CSS_SELECTOR, "a[data-bg]")
         data_bg_values = [element.get_attribute("data-bg") for element in anchor_elements]
         return data_bg_values
-        # data_bg_value = anchor_element.get_attribute("data-bg")
 
     # List to store all data
     all_data = []
@@ -39,7 +39,7 @@ def scrape_blog_data(driver, url):
             current_images = get_images()
 
             # Combine all data into a dictionary
-            page_data = {'titles': current_titles, 'likes': current_likes, 'date': current_date, 'images': current_images}
+            page_data = {'Title': current_titles, 'Likes': current_likes, 'Date': current_date, 'Images': current_images}
             all_data.append(page_data)
             
             next_page_button = WebDriverWait(driver, 10).until(
@@ -53,18 +53,25 @@ def scrape_blog_data(driver, url):
 
     return all_data
 
+def write_to_csv(data, filename='output.csv'):
+    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = ['titles', 'likes', 'date', 'images']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        # Write the header
+        writer.writeheader()
+
+        # Write the data
+        for page_data in data:
+            writer.writerow(page_data)
+
 # Example usage
 driver = webdriver.Chrome()
 url = "https://rategain.com/blog/"
 result_data = scrape_blog_data(driver, url)
 
-# Print all data
-for page_data in result_data:
-    print("Titles:", page_data['titles'])
-    print("Likes:", page_data['likes'])
-    print("Date:", page_data['date'])
-    print("Images:", page_data['images'])
-    print()
+# Write data to CSV
+write_to_csv(result_data)
 
 # Close the browser window
 driver.quit()

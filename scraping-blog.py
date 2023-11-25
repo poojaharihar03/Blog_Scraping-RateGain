@@ -5,7 +5,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 def scrape_blog_data(driver, url):
-    # Navigate to the initial page
     driver.get(url)
 
     def get_titles():
@@ -28,7 +27,6 @@ def scrape_blog_data(driver, url):
         data_bg_values = [element.get_attribute("data-bg") for element in anchor_elements]
         return data_bg_values
 
-    # List to store all data
     all_data = []
 
     while True:
@@ -38,7 +36,7 @@ def scrape_blog_data(driver, url):
             current_date = get_date()
             current_images = get_images()
 
-            # Combine all data into a dictionary
+           
             page_data = {'Title': current_titles, 'Likes': current_likes, 'Date': current_date, 'Images': current_images}
             all_data.append(page_data)
             
@@ -58,20 +56,20 @@ def write_to_csv(data, filename='output.csv'):
         fieldnames = ['titles', 'likes', 'date', 'images']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-        # Write the header
+       
         writer.writeheader()
 
-        # Write the data
+       
         for page_data in data:
             writer.writerow(page_data)
 
-# Example usage
+
 driver = webdriver.Chrome()
 url = "https://rategain.com/blog/"
 result_data = scrape_blog_data(driver, url)
 
-# Write data to CSV
+
 write_to_csv(result_data)
 
-# Close the browser window
+
 driver.quit()
